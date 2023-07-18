@@ -15,3 +15,5 @@ define('BD_ACF_DOMAIN', 'borndigital_acf');
 require_once __DIR__ . '/ajax/class-generate-acf-file.php';
 require_once __DIR__ . '/admin/class-setup.php';
 require_once __DIR__ . '/acf.php';
+require_once __DIR__ . '/shop-acf.php';
+require_once __DIR__ . '/product-acf.php';

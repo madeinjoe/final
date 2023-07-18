@@ -12,7 +12,7 @@ import config from "./compiler.options";
 const { ProgressPlugin } = webpack;
 
 const entries = {};
-const entriesRaw = [...config.js, ...config.sass].map((entry) => {
+const entriesRaw = [...config.js, ...config.sass, ...config.tailwind].map((entry) => {
   if (typeof entry === "string") {
     const name = path.parse(path.basename(entry)).name;
     return {
@@ -108,6 +108,14 @@ module.exports = {
           },
         ],
       },
+      {
+        test:/\.css$/,
+        use:[
+          MiniCssExtractPlugin.loader,
+          "css-loader",
+          "postcss-loader"
+        ]
+      }
     ],
   },
   plugins: [

@@ -13,4 +13,6 @@ require_once __DIR__ . '/__class-register.php';
 
 
 // example
-require_once __DIR__ . '/example-cpt.php';
+// require_once __DIR__ . '/example-cpt.php';
+require_once __DIR__ . '/contact-cpt.php';
+require_once __DIR__ . '/product-cpt.php';

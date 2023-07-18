@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-100;
+  }
+
+  body::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  body::-webkit-scrollbar-track {
+    @apply bg-gray-300;
+  }
+
+  body::-webkit-scrollbar-thumb {
+    @apply bg-gray-500 border-2 border-sky-300 hover:bg-gray-600;
+  }
+}
+
+@layer components {
+  .woocommerce-product-gallery__image {
+    @apply w-[100px] !important;
+  }
+}

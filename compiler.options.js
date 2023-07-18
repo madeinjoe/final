@@ -1,6 +1,7 @@
 const configuration = {
   sass: ["./assets/src/scss/style.scss"],
   js: ["./assets/src/js/script.js"],
+  tailwind: ["./assets/custom/tailwind.css"],
   browserSync: {
     proxy: "http://dev-theme-setup.test/",
     host: "dev-theme-setup.test",
