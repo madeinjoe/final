@@ -13,6 +13,7 @@ class middleWoocommerce
         add_action('woocommerce_single_product_summary', [$this, 'wooShopProductsPrice']);
 
         /** counter */
+        add_action('woocommerce_before_shop_loop_item', [$this, 'wooShop']);
         add_action('woocommerce_after_shop_loop_item_title', [$this, 'wooShopProduct']);
         add_action('woocommerce_after_shop_loop_item_title', [$this, 'wooCountdownWrapper']);
 
@@ -94,6 +95,20 @@ class middleWoocommerce
         }
         echo '<h1 class="text-3xl text-emerald-600">' . wc_price($price) . '</h1>';
     }
+
+    public function wooShop()
+    {
+        global $product;
+
+        if ($product->is_type('external')) {
+            echo '<span class="absolute top-0 right-0 px-2 text-sm text-white rounded-l w-fit whitespace-nowrap bg-black/60">External Product</span>';
+        } else if ($product->is_type('variable')) {
+            echo '<span class="absolute top-0 right-0 px-2 text-sm text-white rounded-l w-fit whitespace-nowrap bg-black/60">Variable Product</span>';
+        } else if ($product->is_virtual()) {
+            echo '<span class="absolute top-0 right-0 px-2 text-sm text-white rounded-l w-fit whitespace-nowrap bg-black/60">Virtual Product</span>';
+        }
+    }
+
     public function wooShopProduct()
     {
         global $product;
@@ -128,15 +143,32 @@ class middleWoocommerce
     {
         global $product;
 
-        echo '<div id="' . $product->get_ID() . '" class="flex flex-col mt-2">';
-        echo '<span id="countdown-note"></span>';
-        echo '<span id="countdown">
-            <span id="days" class=""></span>
-            <span id="hours"></span>
-            <span id="minutes"></span>
-            <span id="seconds"></span>
-        </span>';
-        echo '</div>';
+        $currentTime = new DateTime('now');
+        $fromTime = $product->get_date_on_sale_from() ? new DateTime($product->get_date_on_sale_from()->date('Y-m-d H:i:s')) : null;
+        $toTime = $product->get_date_on_sale_to() ? new DateTime($product->get_date_on_sale_to()->date('Y-m-d H:i:s')) : null;
+        if (($product->get_date_on_sale_from() || $product->get_date_on_sale_to()) && ($fromTime > $currentTime || $currentTime < $toTime)) {
+            echo '<div id="' . $product->get_ID() . '" class="flex flex-col mt-2">';
+            echo '<span id="countdown-note"></span>';
+            echo '<span id="countdown" class="flex gap-1 flex-nowrap">
+                    <span class="flex flex-col p-2 text-center bg-white border border-gray-200 border-solid rounded w-fit">
+                        <span id="days" class="font-bold"></span>
+                        Days
+                    </span>
+                    <span class="flex flex-col p-2 text-center bg-white border border-gray-200 border-solid rounded w-fit">
+                        <span id="hours" class="font-bold"></span>
+                        Hr
+                    </span>
+                    <span class="flex flex-col p-2 text-center bg-white border border-gray-200 border-solid rounded w-fit">
+                        <span id="minutes" class="font-bold"></span>
+                        Min
+                    </span>
+                    <span class="flex flex-col p-2 text-center bg-white border border-gray-200 border-solid rounded w-fit">
+                        <span id="seconds" class="font-bold"></span>
+                        Sec
+                    </span>
+                </span>';
+            echo '</div>';
+        }
     }
 
     public function wooSingleProduct()
@@ -165,10 +197,10 @@ class middleWoocommerce
     public function wooItemCustomMeta()
     {
         global $product;
-        echo '<input type="hidden" name="item" value="' . $product->get_ID() . '">';
-        echo '<input type="hidden" name="action" value="woo_atc_games">';
-        echo '<input type="hidden" name="url" value="' . admin_url('admin-ajax.php') . '">';
         if ($product->is_virtual('yes') && has_term('games', 'product_cat', $product->get_ID())) {
+            echo '<input type="hidden" name="item" value="' . $product->get_ID() . '">';
+            echo '<input type="hidden" name="action" value="woo_atc_games">';
+            echo '<input type="hidden" name="url" value="' . admin_url('admin-ajax.php') . '">';
             // echo '<div id="form-custom-meta">';
             wp_nonce_field('_atc_games', 'nonce');
             echo '<div class="input-group">';

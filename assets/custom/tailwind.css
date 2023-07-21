@@ -52,4 +52,8 @@
   .woocommerce .quantity .qty {
     @apply w-full;
   }
+
+  li.product {
+    @apply relative;
+  }
 }

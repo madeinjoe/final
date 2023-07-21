@@ -24,6 +24,9 @@ var lamModule = function () {
       url: theUrl,
       method: 'POST',
       data: jquery__WEBPACK_IMPORTED_MODULE_0___default().param(postData),
+      beforeSend: function beforeSend() {
+        alert('Loading...');
+      },
       statusCode: {
         200: function _(response) {
           alert(response.message);

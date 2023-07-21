@@ -1,14 +1,22 @@
 <?php
 defined('ABSPATH') || die('Direct Acces not allowed');
 
-class AdmissionPage extends RegisterPost {
-    public function __construct () {
-        add_action('after_setup_theme', [$this, 'loginPage']);
-        add_action('after_setup_theme', [$this, 'registrationPage']);
-        add_action('after-setup_theme', [$this, 'activationPage']);
+class AdmissionPage extends RegisterPost
+{
+    public function __construct()
+    {
+        add_action('after_setup_theme', [$this, 'init']);
     }
 
-    public function loginPage () {
+    public function init()
+    {
+        $this->loginPage();
+        $this->registrationPage();
+        $this->activationPage();
+    }
+
+    public function loginPage()
+    {
         $permalink = 'login';
         if (!get_page_by_path($permalink)) {
             $template = 'template-parts/custom-login.php';
@@ -29,7 +37,8 @@ class AdmissionPage extends RegisterPost {
         }
     }
 
-    public function registrationPage () {
+    public function registrationPage()
+    {
         /** Custom registration */
         $permalink = 'custom-registration';
         $template = 'template-parts/custom-registration.php';
@@ -50,7 +59,8 @@ class AdmissionPage extends RegisterPost {
         }
     }
 
-    public function activationPage () {
+    public function activationPage()
+    {
         /** Custom activation */
         $activationPermalink = 'account-activation';
         $activationTemplate = 'template-parts/custom-activation.php';

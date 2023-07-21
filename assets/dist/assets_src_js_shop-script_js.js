@@ -21,7 +21,7 @@ var lamModule = function () {
       var currentTime = new Date();
       var fromTime = new Date(jquery__WEBPACK_IMPORTED_MODULE_0___default()(obj).find('.from').data('from'));
       var toTime = new Date(jquery__WEBPACK_IMPORTED_MODULE_0___default()(obj).find('.to').data('to'));
-      if ((fromTime || toTime) && fromTime < currentTime < toTime) {
+      if ((fromTime || toTime) && (fromTime > currentTime || currentTime < toTime)) {
         var d = null;
         var h = null;
         var m = null;
@@ -52,10 +52,10 @@ var lamModule = function () {
           m = m < 0 ? 59 : m;
           h = h < 0 ? 24 : h;
           jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#countdown-note").html(note);
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#countdown").find("#days").html(d);
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#countdown").find("#hours").html(h < 10 ? '0' + h : h);
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#countdown").find("#minutes").html(m < 10 ? '0' + m : m);
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#countdown").find("#seconds").html(s < 10 ? '0' + s : s);
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#days").html(d);
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#hours").html(h < 10 ? '0' + h : h);
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#minutes").html(m < 10 ? '0' + m : m);
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#seconds").html(s < 10 ? '0' + s : s);
         }, 1000);
       }
     });
@@ -69,28 +69,27 @@ var lamModule = function () {
       method: 'POST',
       data: jquery__WEBPACK_IMPORTED_MODULE_0___default().param(postData),
       beforeSend: function beforeSend() {
-        console.log(postData);
+        alert('Loading...');
       },
       statusCode: {
         200: function _(response) {
-          console.log(response);
+          // console.log(response)
           alert(response.message);
           jquery__WEBPACK_IMPORTED_MODULE_0___default()('form.cart')[0].reset();
         },
         400: function _(response) {
           alert(response.responseJSON.message);
-          console.log(response.responseJSON);
+          // console.log(response.responseJSON)
         },
+
         500: function _(response) {
           alert(response.responseJSON.message);
-          console.log(response.responseJSON);
+          // console.log(response.responseJSON)
         }
-      },
-      complete: function complete(xhr, textStatus) {
-        alert(xhr.status);
       }
     });
   }
+
   function atcButton() {
     jquery__WEBPACK_IMPORTED_MODULE_0___default()(".virtual-games").each(function (i, obj) {
       var parent = jquery__WEBPACK_IMPORTED_MODULE_0___default()(obj).parent();
@@ -109,11 +108,16 @@ var lamModule = function () {
       });
     });
   }
+  function test() {
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()(".woocommerce-loop-product__link").addClass('relative');
+  }
   function initialize() {
     showCountDown();
     atcButton();
     jquery__WEBPACK_IMPORTED_MODULE_0___default()(".cart").on("submit", atcGamesProduct);
+    // test()
   }
+
   return {
     init: initialize
   };

@@ -9,7 +9,7 @@ const lamModule = (function() {
       const fromTime = new Date($(obj).find('.from').data('from'))
       const toTime = new Date($(obj).find('.to').data('to'))
 
-      if ((fromTime || toTime) && fromTime < currentTime < toTime) {
+      if ((fromTime || toTime) && (fromTime > currentTime || currentTime < toTime)) {
         let d = null
         let h = null
         let m = null
@@ -48,10 +48,10 @@ const lamModule = (function() {
           h = (h < 0 ? 24 : h)
 
           $('#'+theID).find("#countdown-note").html(note)
-          $('#'+theID).find("#countdown").find("#days").html(d)
-          $('#'+theID).find("#countdown").find("#hours").html(h < 10 ? '0' + h : h)
-          $('#'+theID).find("#countdown").find("#minutes").html(m < 10 ? '0' + m : m)
-          $('#'+theID).find("#countdown").find("#seconds").html(s < 10 ? '0' + s : s)
+          $('#'+theID).find("#days").html(d)
+          $('#'+theID).find("#hours").html(h < 10 ? '0' + h : h)
+          $('#'+theID).find("#minutes").html(m < 10 ? '0' + m : m)
+          $('#'+theID).find("#seconds").html(s < 10 ? '0' + s : s)
         }, 1000)
       }
     })
@@ -68,25 +68,22 @@ const lamModule = (function() {
       method: 'POST',
       data: $.param(postData),
       beforeSend: function () {
-        console.log(postData)
+        alert('Loading...')
       },
       statusCode: {
         200: function (response) {
-          console.log(response)
+          // console.log(response)
           alert(response.message)
           $('form.cart')[0].reset()
         },
         400: function (response) {
           alert(response.responseJSON.message)
-          console.log(response.responseJSON)
+          // console.log(response.responseJSON)
         },
         500: function (response) {
           alert(response.responseJSON.message)
-          console.log(response.responseJSON)
+          // console.log(response.responseJSON)
         }
-      },
-      complete: function(xhr, textStatus) {
-        alert(xhr.status);
       }
     })
   }
@@ -111,10 +108,15 @@ const lamModule = (function() {
     })
   }
 
+  function test () {
+    $(".woocommerce-loop-product__link").addClass('relative')
+  }
+
   function initialize () {
     showCountDown()
     atcButton()
     $(".cart").on("submit", atcGamesProduct)
+    // test()
   }
 
   return {

@@ -5,7 +5,11 @@ class ProductAjax extends SanitizeAndValidate
 {
     private $data = [
         'nonce' => false,
-        'quantity' => null
+        'item' => null,
+        'product_id' => null,
+        'quantity' => null,
+        'variation_id' => null,
+        ''
     ];
 
     public function __construct()
@@ -17,10 +21,10 @@ class ProductAjax extends SanitizeAndValidate
 
     public function wooAtcGames()
     {
+        $id = $_POST['item'] ? sanitize_text_field($_POST['item']) : sanitize_text_field($_POST['product_id']);
         $product = wc_get_product($_POST['item']);
 
         if ($product->is_virtual('yes') && has_term('games', 'product_cat', $product->get_ID())) {
-            $id = sanitize_text_field($_POST['item']);
 
             $metas['metadata'][] = [
                 '_item_platform' => sanitize_text_field($_POST['meta-slct']),
@@ -71,7 +75,15 @@ class ProductAjax extends SanitizeAndValidate
                 ], 500);
             }
         } else {
-            $addToCart = WC()->cart->add_to_cart($_POST['item'], $_POST['quantity'], 0, [], []);
+            foreach ($_POST as $key => $values) {
+                if (str_contains($key, 'attribute_')) {
+                    $this->data['attribute'][] = [
+                        sanitize_text_field($key) => sanitize_text_field($values)
+                    ];
+                }
+            }
+
+            $addToCart = WC()->cart->add_to_cart($_POST['item'], $_POST['quantity'], $_POST['variation_id'], [], null);
 
             if ($addToCart) {
                 return wp_send_json([

@@ -41,6 +41,11 @@ class Enqueue
             true
         );
 
+        $custom_registration = [
+            "action" => "registration_handle",
+            "nonce" => wp_create_nonce("_custom_registration")
+        ];
+
         /**
          * enqueue Example Ajax
          */
@@ -49,6 +54,7 @@ class Enqueue
             'parameters', // Object name parameter
             [
                 'url_admin_ajax'       => admin_url('admin-ajax.php'),
+                'ajax_custom_registration' => $custom_registration
             ]
         );
     }

@@ -57,7 +57,8 @@ class ContactAjax extends SanitizeAndValidate
                 'errors'  => $validate['errors']
             ], 400);
         } else {
-            $message = $this->registerPost->makePost($this->data['lam-subject'], 'shop-messages', ['administrator', 'editor', 'author', 'contributor', 'subscriber'], 'default', $arguments);
+            // $message = $this->registerPost->makePost($this->data['lam-subject'], 'shop-messages', ['administrator', 'editor', 'author', 'contributor', 'subscriber'], 'default', $arguments);
+            $message = $this->registerPost->makeMessage($this->data['lam-subject'], 'shop-messages', ['administrator', 'editor', 'author', 'contributor', 'subscriber'], 'default', $arguments);
             if (!$message) {
                 return wp_send_json([
                     'success' => false,
@@ -67,6 +68,13 @@ class ContactAjax extends SanitizeAndValidate
             $metaMail = update_post_meta($message, '_message_email', $this->data['lam-email']);
             $metaName = update_post_meta($message, '_message_name', $this->data['lam-name']);
 
+            $admin = get_users('role=Administrator');
+            foreach ($admin as $user) {
+                /** Send message to admin email */
+                $headers[] = 'From: ' . $metaName . '<' . $metaMail . '>';
+                wp_mail($user->user_email, 'SUBJECT', $this->data['lam-message'], $headers);
+            }
+
             wp_send_json([
                 'success' => true,
                 'message' => 'Message sent!'
@@ -74,6 +82,14 @@ class ContactAjax extends SanitizeAndValidate
         }
     }
 
+    /**
+     * _validate_lam
+     *
+     * for lam (leave a message)
+     *
+     * @param array $request
+     * @return void
+     */
     private function _validate_lam(array $request)
     {
         $response = [

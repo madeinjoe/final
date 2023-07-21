@@ -1,5 +1,7 @@
 <?php
+
 namespace Custom\Post;
+
 defined('ABSPATH') || die("Direct access not allowed");
 
 class RegisterPost
@@ -69,5 +71,35 @@ class RegisterPost
             'page_template' => $template ?? 'default'
         ];
         return $defaultArguments;
+    }
+
+    public function makeMessage(String $title, String $post_type, array $allowed_role, String $template, array $args, $permalink = null)
+    {
+        /** Check if title and permalink exist */
+        // $post = get_page_by_title($title); // Deprecated since 6.2.0
+        $posts = get_posts(
+            array(
+                'post_type'              => $post_type,
+                'title'                  => $title,
+                'post_status'            => 'all',
+                'numberposts'            => 1,
+                'update_post_term_cache' => false,
+                'update_post_meta_cache' => false,
+                'orderby'                => 'post_date ID',
+                'order'                  => 'ASC',
+            )
+        );
+        // $link = $permalink ? get_page_by_path($permalink) : false;
+        /** Get the args */
+        $defaultArguments = self::theArguments($permalink, $title, $post_type, $template);
+
+        if (!empty($args)) {
+            foreach ($args as $key => $value) {
+                $defaultArguments[$key] = $value;
+            }
+        }
+
+        $postID = wp_insert_post($defaultArguments, false, true);
+        return $postID;
     }
 }

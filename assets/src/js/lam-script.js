@@ -11,6 +11,9 @@ const lamModule = (function() {
       url: theUrl,
       method: 'POST',
       data: $.param(postData),
+      beforeSend: function () {
+        alert('Loading...')
+      },
       statusCode: {
         200: function (response) {
           alert(response.message)
