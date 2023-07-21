@@ -13,21 +13,23 @@ class middleWoocommerce
         add_action('woocommerce_single_product_summary', [$this, 'wooShopProductsPrice']);
 
         /** counter */
-        add_action('woocommerce_before_shop_loop_item', [$this, 'wooShopProduct']);
+        add_action('woocommerce_after_shop_loop_item_title', [$this, 'wooShopProduct']);
         add_action('woocommerce_after_shop_loop_item_title', [$this, 'wooCountdownWrapper']);
 
         /** Single Product */
         add_action('woocommerce_before_single_product', [$this, 'wooSingleProduct']);
-
-        /** Cart */
         add_action('woocommerce_before_add_to_cart_form', [$this, 'wooCountdownWrapper']);
         add_action('woocommerce_before_add_to_cart_quantity', [$this, 'wooItemCustomMeta']);
+
+        /** Cart */
         add_filter('woocommerce_get_item_data', [$this, 'wooCartRenderMeta'], 10, 2);
+        add_filter('woocommerce_cart_item_quantity', [$this, 'wooCartQuantity'], 10, 3);
 
         /** Order */
         add_action('woocommerce_order_item_meta_start', [$this, 'wooEmailItemMeta'], 10, 4);
         add_action('woocommerce_add_order_item_meta', [$this, 'wooAtcGamesMeta'], 10, 3);
-        add_filter('wp_mail', [$this, 'wooOrderEmail'], 10, 1);
+        // add_action('woocommerce_checkout_create_order_line_item', [$this, 'wooAtcGamesMeta'], 10, 4);
+        // add_filter('wp_mail', [$this, 'wooOrderEmail'], 10, 1);
     }
 
     public function wooCartItemPrice($cart)
@@ -85,7 +87,12 @@ class middleWoocommerce
         }
 
         $price = floatval($product->get_price()) - $totalDisc;
-        echo '<h1 class="text-3xl text-emerald-600">' . $price . '</h1>';
+        // $display = number_format($price, 2, ',', '.');
+        $display = wc_price($price);
+        if (floatval($product->get_price()) > floatval($price)) {
+            echo '<h1 class="text-lg text-gray-300">' . wc_price($product->get_price()) . '</h1>';
+        }
+        echo '<h1 class="text-3xl text-emerald-600">' . wc_price($price) . '</h1>';
     }
     public function wooShopProduct()
     {
@@ -109,6 +116,10 @@ class middleWoocommerce
             $output .= '<span class="sec" data-sec="' . $timeDiff->s . '"></span>';
         }
         $output .= '</span>';
+
+        if ($product->is_virtual('yes') && has_term('games', 'product_cat', $product->get_ID())) {
+            $output .= '<span class="virtual-games" data-id="' . $product->get_ID() . '"></span>';
+        }
 
         echo $output;
     }
@@ -154,11 +165,11 @@ class middleWoocommerce
     public function wooItemCustomMeta()
     {
         global $product;
+        echo '<input type="hidden" name="item" value="' . $product->get_ID() . '">';
+        echo '<input type="hidden" name="action" value="woo_atc_games">';
+        echo '<input type="hidden" name="url" value="' . admin_url('admin-ajax.php') . '">';
         if ($product->is_virtual('yes') && has_term('games', 'product_cat', $product->get_ID())) {
             // echo '<div id="form-custom-meta">';
-            echo '<input type="hidden" name="item" value="' . $product->get_ID() . '">';
-            echo '<input type="hidden" name="action" value="woo_atc_games">';
-            echo '<input type="hidden" name="url" value="' . admin_url('admin-ajax.php') . '">';
             wp_nonce_field('_atc_games', 'nonce');
             echo '<div class="input-group">';
             echo '<label for="custom-meta-1">Select Platform</label>';
@@ -179,30 +190,52 @@ class middleWoocommerce
 
     public function wooCartRenderMeta($data, $cart_item)
     {
-        // if (array_key_exists('metadata', $cart_item)) {
-        array_push($data, [
-            'name' => 'Platform',
-            'value' => $cart_item['metadata']['_item_platform'] . ' - ' . $cart_item['metadata']['_item_account']
-        ]);
-        // }
+        if (array_key_exists('metadata', $cart_item)) {
+            foreach ($cart_item['metadata'] as $key => $values) {
+                array_push($data, [
+                    'name' => 'Platform',
+                    'value' => $values['_item_platform'] . ' - ' . $values['_item_account']
+                ]);
+            }
+        }
 
         return $data;
     }
 
-    public function wooAtcGamesMeta($itemId, $values, $key)
+    public function wooAtcGamesMeta($itemId, $cart_items, $cart_item_key)
+    // public function wooAtcGamesMeta($item, $cart_item_key, $cart_items, $order)
     {
-        $session_var = 'sess_cart_games';
-        $session_data = WC()->session->get($session_var);
-        if (!empty($session_data)) {
-            wc_add_order_item_meta($itemId, '_item_platform', $values['metadata']['_item_platform']);
-            wc_add_order_item_meta($itemId, '_item_account', $values['metadata']['_item_account']);
+        wc_add_order_item_meta($itemId, 'metadata', $cart_items['metadata']);
+        // $session_var = 'sess_cart_games';
+        // $session_data = WC()->session->get($session_var);
+        // if (!empty($session_data)) {
+        // }
+    }
+
+    public function wooCartQuantity($product_quantity, $cart_item_key, $cart_item)
+    {
+        $product = wc_get_product($cart_item['product_id']);
+
+        if ($product->is_virtual('yes') && has_term('games', 'product_cat', $product->get_ID())) {
+            return '<span>' . $product_quantity . '</span>';
+        } else {
+            return $product_quantity;
         }
     }
 
     public function wooEmailItemMeta($item_id, $item, $order, $do_plain)
     {
-        echo '<hr>';
-        echo 'Account ' . ' : [' . $item->get_meta('_item_platform') . '] ' . $item->get_meta('_item_account');
+        $meta = wc_get_order_item_meta($item_id, 'metadata', true);
+        if ($meta) {
+            foreach ($meta as $key => $value) {
+                echo '<hr>';
+                echo 'Account ' . ' : [' . $value['_item_platform'] . '] ' . $value['_item_account'];
+            }
+            // print("<pre>" . print_r(wc_get_order_item($item_id), true) . "</pre>");
+            // print("<pre>" . print_r(wc_get_order_item_meta($item_id, 'ci', true), true) . "</pre>");
+            // print("<pre>" . print_r(wc_get_order_item_meta($item_id, 'metadata', true), true) . "</pre>");
+            // print("<pre>" . print_r($item->get_ID(), true) . "</pre>");
+        }
     }
 
     public function wooOrderEmail($headers)
@@ -210,6 +243,7 @@ class middleWoocommerce
         $headers[] = 'From: ' . WPMS_MAIL_FROM_NAME . '<' . WPMS_MAIL_FROM . '>';
         return $headers;
     }
+
     private function productCountDownData($product)
     {
         $currentTime = new DateTime('now');

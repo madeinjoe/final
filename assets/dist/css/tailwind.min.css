@@ -647,6 +647,9 @@ video {
 .w-full {
   width: 100% !important;
 }
+.w-8\/12 {
+  width: 66.666667% !important;
+}
 .cursor-pointer {
   cursor: pointer !important;
 }
@@ -783,6 +786,10 @@ video {
   font-size: 1.25rem !important;
   line-height: 1.75rem !important;
 }
+.text-lg {
+  font-size: 1.125rem !important;
+  line-height: 1.75rem !important;
+}
 .font-bold {
   font-weight: 700 !important;
 }
@@ -811,6 +818,10 @@ video {
 .text-white {
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity)) !important;
+}
+.text-gray-300 {
+  --tw-text-opacity: 1 !important;
+  color: rgb(209 213 219 / var(--tw-text-opacity)) !important;
 }
 .underline {
   text-decoration-line: underline !important;

@@ -155,7 +155,7 @@ class AdmissionAjax extends SanitizeAndValidate
                 wp_send_json([
                     'success' => true,
                     'message' => 'Registration Success. Please check your email for activation link.',
-                    'redirect' => $redirect
+                    'data' => ['redirect' => $redirect]
                 ], 200);
             }
         }

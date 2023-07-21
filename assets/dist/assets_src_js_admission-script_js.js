@@ -14,7 +14,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
 
-var myModule = function () {
+var admissionModule = function () {
   function passwordToggle(e) {
     jquery__WEBPACK_IMPORTED_MODULE_0___default()(e.target).addClass("hidden");
     if (jquery__WEBPACK_IMPORTED_MODULE_0___default()(e.target).hasClass("pw-s")) {
@@ -38,10 +38,9 @@ var myModule = function () {
       },
       statusCode: {
         200: function _(response) {
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').html(response.message);
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').html(response.message + "or <a href=\"" + response.data.redirect + "\" class=\"underline cursor-pointer\">Click here to login</a>");
           jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').removeClass('hidden');
           jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').hasClass('hidden') ? jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').hide() : jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').addClass('hidden');
-          response.message += "or <a href=\"" + response.data.redirect + "\" class=\"underline cursor-pointer\">Click here to login</a>";
           alert(response.message);
           jquery__WEBPACK_IMPORTED_MODULE_0___default()('#registration-form')[0].reset();
           // window.location.replace(response.data.redirect)
@@ -66,7 +65,7 @@ var myModule = function () {
             jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-username").hide();
           }
           if (errors['email']) {
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registraiton-email").addClass("input-invalid");
+            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registration-email").addClass("input-invalid");
             jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-email").show();
             var _errorMsg = '';
             errors['email'].forEach(function (err) {
@@ -87,7 +86,7 @@ var myModule = function () {
             });
             jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-password").html(_errorMsg2);
           } else {
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registraiton-email").removeClass("input-invalid");
+            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registration-email").removeClass("input-invalid");
             jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-password").html('');
             jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-password").hide();
           }
@@ -100,7 +99,7 @@ var myModule = function () {
             });
             jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-re-password").html(_errorMsg3);
           } else {
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registraiton-email").removeClass("input-invalid");
+            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registration-email").removeClass("input-invalid");
             jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-re-password").html('');
             jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-re-password").hide();
           }
@@ -174,7 +173,7 @@ var myModule = function () {
     init: initialize
   };
 }();
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (myModule);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (admissionModule);
 
 /***/ })
 

@@ -6,3 +6,17 @@ if ($('#content').hasClass('page-admission')) {
     admissionModule.init()
   });
 }
+
+if ($('#content').hasClass('page-contact')) {
+  import('./lam-script.js').then((module) => {
+    const contactModule = module.default; // Access the default property
+    contactModule.init()
+  });
+}
+
+if ($('input[name="item"]').length > 0 || $('.product').length > 0 || $('.products').length > 0) {
+  import('./shop-script.js').then((module) => {
+    const shopModule = module.default; // Access the default property
+    shopModule.init()
+  });
+}

@@ -1,5 +1,5 @@
 import $ from "jquery"
-const myModule = (function() {
+const admissionModule = (function() {
   function passwordToggle (e) {
     $(e.target).addClass("hidden")
 
@@ -27,10 +27,9 @@ const myModule = (function() {
       },
       statusCode: {
         200: function (response) {
-          $('#success-msg').html(response.message)
+          $('#success-msg').html(response.message + `or <a href="`+ response.data.redirect + `" class="underline cursor-pointer">Click here to login</a>`)
           $('#success-msg').removeClass('hidden')
           $('#error-msg').hasClass('hidden') ? $('#error-msg').hide() : $('#error-msg').addClass('hidden')
-          response.message += `or <a href="`+ response.data.redirect +`" class="underline cursor-pointer">Click here to login</a>`
           alert(response.message)
           $('#registration-form')[0].reset()
           // window.location.replace(response.data.redirect)
@@ -57,7 +56,7 @@ const myModule = (function() {
           }
 
           if (errors['email']) {
-            $("#ft-registraiton-email").addClass("input-invalid")
+            $("#ft-registration-email").addClass("input-invalid")
 
             $("#error-msg-email").show()
             let errorMsg = ''
@@ -81,7 +80,7 @@ const myModule = (function() {
             })
             $("#error-msg-password").html(errorMsg)
           } else {
-            $("#ft-registraiton-email").removeClass("input-invalid")
+            $("#ft-registration-email").removeClass("input-invalid")
             $("#error-msg-password").html('')
             $("#error-msg-password").hide()
           }
@@ -96,7 +95,7 @@ const myModule = (function() {
             })
             $("#error-msg-re-password").html(errorMsg)
           } else {
-            $("#ft-registraiton-email").removeClass("input-invalid")
+            $("#ft-registration-email").removeClass("input-invalid")
             $("#error-msg-re-password").html('')
             $("#error-msg-re-password").hide()
           }
@@ -180,5 +179,4 @@ const myModule = (function() {
   }
 })()
 
-export default myModule
-
+export default admissionModule

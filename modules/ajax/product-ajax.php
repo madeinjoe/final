@@ -5,41 +5,78 @@ class ProductAjax extends SanitizeAndValidate
 {
     private $data = [
         'nonce' => false,
-        'data' => null
+        'quantity' => null
     ];
 
     public function __construct()
     {
         add_action('wp_ajax_woo_atc_games', [$this, 'wooAtcGames']);
         add_action('wp_ajax_nopriv_woo_atc_games', [$this, 'wooAtcGames']);
+        // add_action('woocommerce_add_cart');
     }
 
     public function wooAtcGames()
     {
-        $this->data = $this->main($this->data, $_POST, '_atc_games');
-        $validate = $this->_validate_input($_POST);
+        $product = wc_get_product($_POST['item']);
 
-        if (!$validate['is_valid']) {
-            return wp_send_json([
-                'success' => false,
-                'message' => 'Invalid user input.',
-                'errors' => $validate['errors']
-            ], 400);
-        } else {
+        if ($product->is_virtual('yes') && has_term('games', 'product_cat', $product->get_ID())) {
             $id = sanitize_text_field($_POST['item']);
 
-            /** Item meta */
-            $metas['metadata']['_item_platform'] = sanitize_text_field($_POST['meta-slct']);
-            $metas['metadata']['_item_account'] = sanitize_text_field($_POST['meta-input']);
-            WC()->session->set('sess_cart_games', $metas);
+            $metas['metadata'][] = [
+                '_item_platform' => sanitize_text_field($_POST['meta-slct']),
+                '_item_account' => sanitize_text_field($_POST['meta-input'])
+            ];
 
-            $addToCart = WC()->cart->add_to_cart($id, $_POST['quantity'], 0, [], $metas);
+
+            if (!WC()->cart->is_empty()) {
+                $cart = WC()->cart;
+                $cart_contents = $cart->cart_contents;
+                foreach ($cart_contents as $key => $item) {
+                    if ($item['product_id'] == $id) {
+                        $qty = intval($item['quantity']) + intval($_POST['quantity']);
+
+                        $metas = $cart_contents[$key]['metadata'] ?? [];
+
+                        array_push($metas, [
+                            '_item_platform' => sanitize_text_field($_POST['meta-slct']),
+                            '_item_account' => sanitize_text_field($_POST['meta-input'])
+                        ]);
+
+                        $cart_contents[$key]['metadata'] = $metas;
+                        WC()->cart->set_cart_contents($cart_contents);
+                        $addToCart = WC()->cart->set_quantity($key, $qty);
+                        break;
+                    } else {
+                        $addToCart = WC()->cart->add_to_cart($id, $_POST['quantity'], 0, [], $metas);
+                    }
+                }
+            } else {
+                $addToCart = WC()->cart->add_to_cart($id, $_POST['quantity'], 0, [], $metas);
+            }
+
+            if ($addToCart) {
+                WC()->session->set('sess_cart_games', $metas);
+                return wp_send_json([
+                    'success' => true,
+                    'message' => 'Added to cart.',
+                    'sess' => WC()->session->get('sess_cart_games')
+                ], 200);
+            } else {
+
+                return wp_send_json([
+                    'success' => false,
+                    'message' => 'Failed adding to cart.',
+                    'atc' => $addToCart,
+                    'metas' => $metas
+                ], 500);
+            }
+        } else {
+            $addToCart = WC()->cart->add_to_cart($_POST['item'], $_POST['quantity'], 0, [], []);
 
             if ($addToCart) {
                 return wp_send_json([
                     'success' => true,
-                    'message' => 'Added to cart.',
-                    'meta' => $metas
+                    'message' => 'Added to cart.'
                 ], 200);
             } else {
                 return wp_send_json([
