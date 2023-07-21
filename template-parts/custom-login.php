@@ -8,9 +8,9 @@
 defined('ABSPATH') || die('Direct Access not allowed');
 
 /** Check if user is logged in */
-// if (is_user_logged_in()) {
-//     wp_redirect(admin_url('/'));
-// }
+if (is_user_logged_in()) {
+    wp_redirect(admin_url('/'));
+}
 
 /** Get login url */
 $pageRegistration = get_page_by_path('registration', 'object', 'page');
