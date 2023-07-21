@@ -8,6 +8,7 @@ defined('ABSPATH') || die("Can't access directly");
 
 class Class_Functions
 {
+    protected $settings;
     public function __construct()
     {
         $this->hook();
@@ -56,15 +57,15 @@ class Class_Functions
         $this->settings = array(
 
             // basic.
-            'name'     => $theme->get('Hello Elementor Advanced'),
-            'domain'   => $theme->get('Hello-Elementor-Advanced'),
-            'version'  => $theme->get('1.0.0'),
+            'name' => $theme->get('Hello Elementor Advanced'),
+            'domain' => $theme->get('Hello-Elementor-Advanced'),
+            'version' => $theme->get('1.0.0'),
 
             // urls.
-            'file'     => __FILE__,
+            'file' => __FILE__,
             'basename' => plugin_basename(__FILE__),
-            'path'     => get_stylesheet_directory(),
-            'url'      => get_stylesheet_directory_uri(),
+            'path' => get_stylesheet_directory(),
+            'url' => get_stylesheet_directory_uri(),
         );
 
         // constant

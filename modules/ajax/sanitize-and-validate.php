@@ -1,6 +1,6 @@
 <?php
 
-defined( 'ABSPATH' ) || die( "Can't access directly" );
+defined('ABSPATH') || die("Can't access directly");
 
 class SanitizeAndValidate
 {
