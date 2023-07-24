@@ -108,9 +108,11 @@ var lamModule = function () {
       });
     });
   }
-  function test() {
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()(".woocommerce-loop-product__link").addClass('relative');
-  }
+
+  // function test () {
+  //   $(".woocommerce-loop-product__link").addClass('relative')
+  // }
+
   function initialize() {
     showCountDown();
     atcButton();

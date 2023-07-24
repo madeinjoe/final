@@ -27,140 +27,143 @@ var admissionModule = function () {
   }
   function submitRegistration(e) {
     e.preventDefault();
-    var theUrl = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).data('url');
     var postData = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).serializeArray();
+    postData.push({
+      name: 'nonce',
+      value: parameters.ajax_custom_registration.nonce
+    });
+    postData.push({
+      name: 'action',
+      value: parameters.ajax_custom_registration.action
+    });
     jquery__WEBPACK_IMPORTED_MODULE_0___default().ajax({
-      url: theUrl,
+      url: parameters.url_admin_ajax,
       method: 'POST',
       data: jquery__WEBPACK_IMPORTED_MODULE_0___default().param(postData),
       beforeSend: function beforeSend() {
         console.log(postData);
-      },
-      statusCode: {
-        200: function _(response) {
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').html(response.message + "or <a href=\"" + response.data.redirect + "\" class=\"underline cursor-pointer\">Click here to login</a>");
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').removeClass('hidden');
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').hasClass('hidden') ? jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').hide() : jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').addClass('hidden');
-          alert(response.message);
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#registration-form')[0].reset();
-          // window.location.replace(response.data.redirect)
-        },
-
-        400: function _(response) {
-          document.getElementById('error-msg').innerHTML = response.responseJSON.message;
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').hasClass('hidden') ? jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').hide() : jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').addClass('hidden');
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').removeClass('hidden');
-          var errors = response.responseJSON.errors;
-          if (errors['username']) {
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registration-username").addClass("input-invalid");
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-username").show();
-            var errorMsg = '';
-            errors['username'].forEach(function (err) {
-              errorMsg += err + '<br>';
-            });
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-username").html(errorMsg);
-          } else {
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registration-username").removeClass("input-invalid");
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-username").html('');
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-username").hide();
-          }
-          if (errors['email']) {
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registration-email").addClass("input-invalid");
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-email").show();
-            var _errorMsg = '';
-            errors['email'].forEach(function (err) {
-              _errorMsg += err + '<br>';
-            });
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-email").html(_errorMsg);
-          } else {
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-egistraiton-email").removeClass("input-invalid");
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-email").html('');
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-email").hide();
-          }
-          if (errors['password']) {
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registration-password").addClass("input-invalid");
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-password").show();
-            var _errorMsg2 = '';
-            errors['password'].forEach(function (err) {
-              _errorMsg2 += err + '<br>';
-            });
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-password").html(_errorMsg2);
-          } else {
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registration-email").removeClass("input-invalid");
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-password").html('');
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-password").hide();
-          }
-          if (errors['re-password']) {
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registration-re-password").addClass("input-invalid");
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-re-password").show();
-            var _errorMsg3 = '';
-            errors['re-password'].forEach(function (err) {
-              _errorMsg3 += err + '<br>';
-            });
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-re-password").html(_errorMsg3);
-          } else {
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registration-email").removeClass("input-invalid");
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-re-password").html('');
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-re-password").hide();
-          }
-          alert(response.responseJSON.message);
-        },
-        500: function _(response) {
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').html(response.responseJSON.message);
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').removeClass('hidden');
-          alert(response.responseJSON.message);
+        alert('loading');
+      }
+    }).done(function (response) {
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').html(response.message + "or <a href=\"" + response.data.redirect + "\" class=\"underline cursor-pointer\">Click here to login</a>");
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').removeClass('hidden');
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').hasClass('hidden') ? jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').hide() : jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').addClass('hidden');
+      alert(response.message);
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#registration-form')[0].reset();
+      // window.location.replace(response.data.redirect)
+    }).fail(function (response) {
+      if (response.status >= 500) {
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').html(response.responseJSON.message);
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').removeClass('hidden');
+        alert(response.responseJSON.message);
+      } else {
+        document.getElementById('error-msg').innerHTML = response.responseJSON.message;
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').hasClass('hidden') ? jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').hide() : jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').addClass('hidden');
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').removeClass('hidden');
+        var errors = response.responseJSON.errors;
+        if (errors['username']) {
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registration-username").addClass("input-invalid");
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-username").show();
+          var errorMsg = '';
+          errors['username'].forEach(function (err) {
+            errorMsg += err + '<br>';
+          });
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-username").html(errorMsg);
+        } else {
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registration-username").removeClass("input-invalid");
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-username").html('');
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-username").hide();
         }
-      },
-      error: function error(xhr, textStatus) {
-        alert(textStatus);
+        if (errors['email']) {
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registration-email").addClass("input-invalid");
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-email").show();
+          var _errorMsg = '';
+          errors['email'].forEach(function (err) {
+            _errorMsg += err + '<br>';
+          });
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-email").html(_errorMsg);
+        } else {
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-egistraiton-email").removeClass("input-invalid");
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-email").html('');
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-email").hide();
+        }
+        if (errors['password']) {
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registration-password").addClass("input-invalid");
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-password").show();
+          var _errorMsg2 = '';
+          errors['password'].forEach(function (err) {
+            _errorMsg2 += err + '<br>';
+          });
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-password").html(_errorMsg2);
+        } else {
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registration-email").removeClass("input-invalid");
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-password").html('');
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-password").hide();
+        }
+        if (errors['re-password']) {
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registration-re-password").addClass("input-invalid");
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-re-password").show();
+          var _errorMsg3 = '';
+          errors['re-password'].forEach(function (err) {
+            _errorMsg3 += err + '<br>';
+          });
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-re-password").html(_errorMsg3);
+        } else {
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-registration-email").removeClass("input-invalid");
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-re-password").html('');
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-re-password").hide();
+        }
+        alert(response.responseJSON.message);
       }
     });
   }
   function submitLogin(e) {
     e.preventDefault();
-    var theUrl = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).data('url');
     var postData = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).serializeArray();
+    postData.push({
+      name: 'nonce',
+      value: parameters.ajax_custom_login.nonce
+    });
+    postData.push({
+      name: 'action',
+      value: parameters.ajax_custom_login.action
+    });
     jquery__WEBPACK_IMPORTED_MODULE_0___default().ajax({
-      url: theUrl,
+      url: parameters.url_admin_ajax,
       method: 'POST',
       data: jquery__WEBPACK_IMPORTED_MODULE_0___default().param(postData),
       beforeSend: function beforeSend() {
-        console.log(postData);
-      },
-      statusCode: {
-        200: function _(response) {
-          alert(response.message);
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#login-form')[0].reset();
-          window.location.replace(response.data.redirect);
-        },
-        400: function _(response) {
-          document.getElementById('error-msg').innerHTML = response.responseJSON.message;
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').hasClass('hidden') ? jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').hide() : jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').addClass('hidden');
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').removeClass('hidden');
-          var errors = response.responseJSON.errors;
-          if (errors['username']) {
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-login-username").addClass("input-invalid");
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-username").show();
-            var errorMsg = '';
-            errors['username'].forEach(function (err) {
-              errorMsg += err + '<br>';
-            });
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-username").html(errorMsg);
-          } else {
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-login-username").removeClass("input-invalid");
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-username").html('');
-            jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-username").hide();
-          }
-          alert(response.responseJSON.message);
-        },
-        500: function _(response) {
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').html(response.responseJSON.message);
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').removeClass('hidden');
-          alert(response.responseJSON.message);
+        // console.log(postData)
+        alert('Logging you in...');
+      }
+    }).done(function (response) {
+      alert(response.message);
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#login-form')[0].reset();
+      window.location.replace(response.data.redirect);
+    }).fail(function (response) {
+      if (response.status >= 500) {
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').html(response.responseJSON.message);
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').removeClass('hidden');
+        alert(response.responseJSON.message);
+      } else {
+        document.getElementById('error-msg').innerHTML = response.responseJSON.message;
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').hasClass('hidden') ? jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').hide() : jquery__WEBPACK_IMPORTED_MODULE_0___default()('#success-msg').addClass('hidden');
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error-msg').removeClass('hidden');
+        var errors = response.responseJSON.errors;
+        if (errors['username']) {
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-login-username").addClass("input-invalid");
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-username").show();
+          var errorMsg = '';
+          errors['username'].forEach(function (err) {
+            errorMsg += err + '<br>';
+          });
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-username").html(errorMsg);
+        } else {
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#ft-login-username").removeClass("input-invalid");
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-username").html('');
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()("#error-msg-username").hide();
         }
-      },
-      error: function error(xhr, textStatus) {
-        alert(textStatus);
+        alert(response.responseJSON.message);
       }
     });
   }

@@ -1,6 +1,8 @@
 <?php
 defined('ABSPATH') || die('Direct Acces not allowed');
 
+use Custom\Post\RegisterPost as RegisterPost;
+
 class AdmissionPage extends RegisterPost
 {
     public function __construct()
@@ -40,7 +42,7 @@ class AdmissionPage extends RegisterPost
     public function registrationPage()
     {
         /** Custom registration */
-        $permalink = 'custom-registration';
+        $permalink = 'registration';
         $template = 'template-parts/custom-registration.php';
 
         if (!get_page_by_path($permalink)) {
@@ -83,3 +85,5 @@ class AdmissionPage extends RegisterPost
         }
     }
 }
+
+new AdmissionPage();

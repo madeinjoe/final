@@ -68,22 +68,8 @@ class Enqueue
             'parameters', // Object name parameter
             [
                 'url_admin_ajax'       => admin_url('admin-ajax.php'),
-                'ajax_custom_registration' => $customRegistration
-            ]
-        );
-        wp_localize_script(
-            'frontend_script', // Ajax Name
-            'login', // Object name parameter
-            [
-                'url_admin_ajax'       => admin_url('admin-ajax.php'),
-                'ajax_custom_login' => $customLogin
-            ]
-        );
-        wp_localize_script(
-            'frontend_script', // Ajax Name
-            'contact', // Object name parameter
-            [
-                'url_admin_ajax'       => admin_url('admin-ajax.php'),
+                'ajax_custom_registration' => $customRegistration,
+                'ajax_custom_login' => $customLogin,
                 'ajax_contact_message' => $contactData
             ]
         );

@@ -1,57 +1,79 @@
 import $ from "jquery"
 
-const lamModule = (function() {
+const contactModule = (function() {
   function submitMessage (e) {
     e.preventDefault()
 
     let postData = $(this).serializeArray()
-    const theUrl = $(this).data('url')
+    postData.push({ name: 'nonce', value: parameters.ajax_contact_message.nonce })
+    postData.push({ name: 'action', value: parameters.ajax_contact_message.action })
 
     $.ajax({
-      url: theUrl,
+      url: parameters.url_admin_ajax,
       method: 'POST',
       data: $.param(postData),
       beforeSend: function () {
         alert('Loading...')
       },
-      statusCode: {
-        200: function (response) {
-          alert(response.message)
-          $('#form-leave-a-message')[0].reset()
-          // window.location.replace(response.data.redirect)
-        },
-        400: function (response) {
-          const errors = response.responseJSON.errors
+    }).done((response) => {
+      alert(response.message)
+      $(this)[0].reset()
+      // window.location.replace(response.data.redirect)
+    }).fail((response) => {
+      const err = response.responseJSON.errors
 
-          if (errors['email']) {
-            $("#lam-email").addClass("input-invalid")
+      /** Show error in DOM */
+      if (err['email']) {
+        $("#contact-message-email").addClass("input-invalid")
 
-            $("#error-msg-email").show()
-            let errorMsg = ''
-            errors['email'].forEach(err => {
-              errorMsg += err + '<br>'
-            })
-            $("#error-msg-email").html(errorMsg)
-          } else {
-            $("#ft-egistraiton-email").removeClass("input-invalid")
-            $("#error-msg-email").html('')
-            $("#error-msg-email").hide()
-          }
-
-          alert(response.responseJSON.message)
-        },
-        500: function (response) {
-          alert(response.responseJSON.message)
-        }
-      },
-      error: function(xhr, textStatus) {
-        alert(textStatus)
+        $("#error-msg-email").show()
+        let errorMsg = ''
+        err['email'].forEach(err => {
+          errorMsg += err + '<br>'
+        })
+        $("#error-msg-email").html(errorMsg)
+      } else {
+        $("#contact-message-email").removeClass("input-invalid")
+        $("#error-msg-email").html('')
+        $("#error-msg-email").hide()
       }
+
+      if (err['name']) {
+        $("#contact-message-name").addClass("input-invalid")
+
+        $("#error-msg-name").show()
+        let errorMsg = ''
+        err['name'].forEach(err => {
+          errorMsg += err + '<br>'
+        })
+        $("#error-msg-name").html(errorMsg)
+      } else {
+        $("#contact-message-name").removeClass("input-invalid")
+        $("#error-msg-name").html('')
+        $("#error-msg-name").hide()
+      }
+
+      if (err['subject']) {
+        $("#contact-message-subject").addClass("input-invalid")
+
+        $("#error-msg-subject").show()
+        let errorMsg = ''
+        err['subject'].forEach(err => {
+          errorMsg += err + '<br>'
+        })
+        $("#error-msg-subject").html(errorMsg)
+      } else {
+        $("#contact-message-subject").removeClass("input-invalid")
+        $("#error-msg-subject").html('')
+        $("#error-msg-subject").hide()
+      }
+
+      alert(response.responseJSON.message)
     })
   }
 
   function initialize () {
-    $('#form-leave-a-message').on("submit", submitMessage)
+    $('#form-contact-message').on("submit", submitMessage)
   }
 
   return {
@@ -59,4 +81,4 @@ const lamModule = (function() {
   }
 })()
 
-export default lamModule
+export default contactModule

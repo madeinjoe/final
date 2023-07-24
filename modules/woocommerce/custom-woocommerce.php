@@ -13,10 +13,8 @@ class middleWoocommerce
         remove_action('woocommerce_single_product_summary', 'woocommerce_template_single_price');
         add_action('woocommerce_single_product_summary', [$this, 'wooShopProductsPrice']);
 
-        /** counter */
         add_action('woocommerce_before_shop_loop_item', [$this, 'wooShop']);
 
-        /** Single Product */
         add_action('woocommerce_before_single_product', [$this, 'wooSingleProduct']);
         add_action('woocommerce_before_add_to_cart_form', [$this, 'wooCountdownWrapper']);
         add_action('woocommerce_before_add_to_cart_quantity', [$this, 'wooItemCustomMeta']);
@@ -29,7 +27,6 @@ class middleWoocommerce
         add_action('woocommerce_order_item_meta_start', [$this, 'wooEmailItemMeta'], 10, 4);
         add_action('woocommerce_add_order_item_meta', [$this, 'wooAtcGamesMeta'], 10, 3);
         // add_action('woocommerce_checkout_create_order_line_item', [$this, 'wooAtcGamesMeta'], 10, 4);
-        // add_filter('wp_mail', [$this, 'wooOrderEmail'], 10, 1);
     }
 
     public function initAfterShopLoopTitle()
@@ -44,16 +41,16 @@ class middleWoocommerce
         // print("<pre>".print_r($cart, true)."</pre>");
         foreach ($cart->cart_contents as $key => $value) {
             $product = wc_get_product($value['product_id']);
-            $cats = get_the_terms($value['product_id'], 'product_cat');
+            $categories = get_the_terms($value['product_id'], 'product_cat');
             $totalDisc = 0;
 
-            foreach ($cats as $cat) {
-                if (has_term_meta($cat->term_id) && get_term_meta($cat->term_id, 'has_discount', true)) {
-                    $discType = get_term_meta($cat->term_id, 'discount_type', true);
-                    $discAmount = get_term_meta($cat->term_id, 'discount_amount', true);
+            foreach ($categories as $category) {
+                if (has_term_meta($category->term_id) && get_term_meta($category->term_id, 'has_discount', true)) {
+                    $discType = get_term_meta($category->term_id, 'discount_type', true);
+                    $discAmount = get_term_meta($category->term_id, 'discount_amount', true);
 
-                    if (get_term_meta($cat->term_id, 'discount_type', true) === 'percentage') {
-                        if (get_term_meta($cat->term_id, 'count_sequentially', true)) {
+                    if (get_term_meta($category->term_id, 'discount_type', true) === 'percentage') {
+                        if (get_term_meta($category->term_id, 'count_sequentially', true)) {
                             $totalDisc = $totalDisc + ((floatval($product->get_price()) - $totalDisc) * (floatval($discAmount) / 100));
                         } else {
                             $totalDisc = $totalDisc + floatval($product->get_price()) * (floatval($discAmount) / 100);
@@ -78,7 +75,6 @@ class middleWoocommerce
 
         foreach ($cats as $cat) {
             if (has_term_meta($cat->term_id) && get_term_meta($cat->term_id, 'has_discount', true)) {
-                $discType = get_term_meta($cat->term_id, 'discount_type', true);
                 $discAmount = get_term_meta($cat->term_id, 'discount_amount', true);
 
                 if (get_term_meta($cat->term_id, 'discount_type', true) === 'percentage') {
@@ -244,10 +240,6 @@ class middleWoocommerce
     // public function wooAtcGamesMeta($item, $cart_item_key, $cart_items, $order)
     {
         wc_add_order_item_meta($itemId, 'metadata', $cart_items['metadata']);
-        // $session_var = 'sess_cart_games';
-        // $session_data = WC()->session->get($session_var);
-        // if (!empty($session_data)) {
-        // }
     }
 
     public function wooCartQuantity($product_quantity, $cart_item_key, $cart_item)
@@ -274,12 +266,6 @@ class middleWoocommerce
             // print("<pre>" . print_r(wc_get_order_item_meta($item_id, 'metadata', true), true) . "</pre>");
             // print("<pre>" . print_r($item->get_ID(), true) . "</pre>");
         }
-    }
-
-    public function wooOrderEmail($headers)
-    {
-        $headers[] = 'From: ' . WPMS_MAIL_FROM_NAME . '<' . WPMS_MAIL_FROM . '>';
-        return $headers;
     }
 
     private function productCountDownData($product)

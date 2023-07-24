@@ -29,9 +29,7 @@ while (have_posts()) :
                 </div>
                 <div id="error-msg" class="hidden w-full px-2 py-2 text-center transition-all duration-150 border-2 border-red-300 text-medium bg-red-200/80">
                 </div>
-                <form id="registration-form" class="flex flex-col gap-2 mt-2" data-url="<?php echo admin_url('admin-ajax.php') ?>">
-                    <input name='action' type="hidden" value='registration_handle'>
-                    <?php wp_nonce_field('_custom_registration', 'nonce'); ?>
+                <form id="registration-form" class="flex flex-col gap-2 mt-2">
                     <div class="w-full input-group">
                         <label for="ft-registration-username" class="form-label">Username<span class="required">*</span></label>
                         <input type="text" id="ft-registration-username" name="registration-username" class="form-control" placeholder="Input your username ..." required />

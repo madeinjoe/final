@@ -2,8 +2,6 @@
 
 namespace Custom\Post;
 
-defined('ABSPATH') || die("Direct access not allowed");
-
 class RegisterPost
 {
     protected $status;
@@ -15,7 +13,7 @@ class RegisterPost
         $this->allowedRoles = ['administrator'];
     }
 
-    public function makePost(String $title, String $post_type, array $allowed_role, String $template, array $args, $permalink = null)
+    public function makePost(String $title, String|array $post_type, array $allowed_role, String $template, array $args, String $permalink = null)
     {
         /** Check if title and permalink exist */
         // $post = get_page_by_title($title); // Deprecated since 6.2.0
@@ -55,7 +53,7 @@ class RegisterPost
         }
     }
 
-    protected function theArguments($permalink, String $title, String $post_type, String $template)
+    protected function theArguments($permalink, $title, $post_type, $template)
     {
         $defaultArguments = [
             'post_title' => $title,
@@ -73,23 +71,8 @@ class RegisterPost
         return $defaultArguments;
     }
 
-    public function makeMessage(String $title, String $post_type, array $allowed_role, String $template, array $args, $permalink = null)
+    public function makeMessage(String $title, String $post_type, String $template, array $args, String $permalink = null)
     {
-        /** Check if title and permalink exist */
-        // $post = get_page_by_title($title); // Deprecated since 6.2.0
-        $posts = get_posts(
-            array(
-                'post_type'              => $post_type,
-                'title'                  => $title,
-                'post_status'            => 'all',
-                'numberposts'            => 1,
-                'update_post_term_cache' => false,
-                'update_post_meta_cache' => false,
-                'orderby'                => 'post_date ID',
-                'order'                  => 'ASC',
-            )
-        );
-        // $link = $permalink ? get_page_by_path($permalink) : false;
         /** Get the args */
         $defaultArguments = self::theArguments($permalink, $title, $post_type, $template);
 

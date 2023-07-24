@@ -108,9 +108,9 @@ const lamModule = (function() {
     })
   }
 
-  function test () {
-    $(".woocommerce-loop-product__link").addClass('relative')
-  }
+  // function test () {
+  //   $(".woocommerce-loop-product__link").addClass('relative')
+  // }
 
   function initialize () {
     showCountDown()
