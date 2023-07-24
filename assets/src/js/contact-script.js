@@ -3,7 +3,7 @@ import $ from "jquery"
 const lamModule = (function() {
   function submitMessage (e) {
     e.preventDefault()
-    console.log('x')
+
     let postData = $(this).serializeArray()
     const theUrl = $(this).data('url')
 

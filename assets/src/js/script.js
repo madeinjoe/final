@@ -8,7 +8,7 @@ if ($('#content').hasClass('page-admission')) {
 }
 
 if ($('#content').hasClass('page-contact')) {
-  import('./lam-script.js').then((module) => {
+  import('./contact-script.js').then((module) => {
     const contactModule = module.default; // Access the default property
     contactModule.init()
   });

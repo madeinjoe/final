@@ -5,17 +5,16 @@ class middleWoocommerce
 {
     public function __construct()
     {
-        /** Calculate Price */
         add_action('woocommerce_before_calculate_totals', [$this, 'wooCartItemPrice'], 10, 1);
+
         remove_action('woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price');
+        add_action('woocommerce_after_shop_loop_item_title', [$this, 'initAfterShopLoopTitle']);
+
         remove_action('woocommerce_single_product_summary', 'woocommerce_template_single_price');
-        add_action('woocommerce_after_shop_loop_item_title', [$this, 'wooShopProductsPrice']);
         add_action('woocommerce_single_product_summary', [$this, 'wooShopProductsPrice']);
 
         /** counter */
         add_action('woocommerce_before_shop_loop_item', [$this, 'wooShop']);
-        add_action('woocommerce_after_shop_loop_item_title', [$this, 'wooShopProduct']);
-        add_action('woocommerce_after_shop_loop_item_title', [$this, 'wooCountdownWrapper']);
 
         /** Single Product */
         add_action('woocommerce_before_single_product', [$this, 'wooSingleProduct']);
@@ -31,6 +30,13 @@ class middleWoocommerce
         add_action('woocommerce_add_order_item_meta', [$this, 'wooAtcGamesMeta'], 10, 3);
         // add_action('woocommerce_checkout_create_order_line_item', [$this, 'wooAtcGamesMeta'], 10, 4);
         // add_filter('wp_mail', [$this, 'wooOrderEmail'], 10, 1);
+    }
+
+    public function initAfterShopLoopTitle()
+    {
+        $this->wooShopProductsPrice();
+        $this->wooShopProduct();
+        $this->wooCountdownWrapper();
     }
 
     public function wooCartItemPrice($cart)

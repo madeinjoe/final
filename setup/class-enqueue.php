@@ -41,10 +41,24 @@ class Enqueue
             true
         );
 
-        $custom_registration = [
+        /**
+         * Set-up localized data for ajax request
+         */
+        $customRegistration = [
             "action" => "registration_handle",
             "nonce" => wp_create_nonce("_custom_registration")
         ];
+
+        $customLogin = [
+            'action' => 'login_handle',
+            'nonce' => wp_create_nonce('_custom_login')
+        ];
+
+        $contactData = [
+            'action' => 'contact_message_handle',
+            'nonce' => wp_create_nonce('_contact_nonce')
+        ];
+
 
         /**
          * enqueue Example Ajax
@@ -54,7 +68,23 @@ class Enqueue
             'parameters', // Object name parameter
             [
                 'url_admin_ajax'       => admin_url('admin-ajax.php'),
-                'ajax_custom_registration' => $custom_registration
+                'ajax_custom_registration' => $customRegistration
+            ]
+        );
+        wp_localize_script(
+            'frontend_script', // Ajax Name
+            'login', // Object name parameter
+            [
+                'url_admin_ajax'       => admin_url('admin-ajax.php'),
+                'ajax_custom_login' => $customLogin
+            ]
+        );
+        wp_localize_script(
+            'frontend_script', // Ajax Name
+            'contact', // Object name parameter
+            [
+                'url_admin_ajax'       => admin_url('admin-ajax.php'),
+                'ajax_contact_message' => $contactData
             ]
         );
     }
