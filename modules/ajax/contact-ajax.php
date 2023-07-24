@@ -33,7 +33,7 @@ class ContactAjax extends SanitizeAndValidate
 
         $validate = $this->_validate_message($this->data);
         if (!$validate['is_valid']) {
-            return wp_send_json([
+            wp_send_json([
                 'success' => false,
                 'message' => 'Invalid user input.',
                 'errors'  => $validate['errors']
@@ -51,7 +51,7 @@ class ContactAjax extends SanitizeAndValidate
 
             $message = $this->registerPost->makeMessage($this->data['contact-message-subject'], 'shop-messages', 'default', $arguments);
             if (!$message) {
-                return wp_send_json([
+                wp_send_json([
                     'success' => false,
                     'message' => 'Failed to store message.'
                 ], 500);

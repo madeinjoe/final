@@ -1,6 +1,6 @@
 import $ from "jquery"
 
-const lamModule = (function() {
+const shopModule = (function() {
   function showCountDown () {
     $('.product-sale-date').each((i, obj) => {
       const theID = $(obj).data('id')
@@ -10,90 +10,89 @@ const lamModule = (function() {
       const toTime = new Date($(obj).find('.to').data('to'))
 
       if ((fromTime || toTime) && (fromTime > currentTime || currentTime < toTime)) {
-        let d = null
-        let h = null
-        let m = null
-        let s = null
+        let day = null
+        let hour = null
+        let minute = null
+        let second = null
         let note = null
-        let diff = 0
+        let difference = 0
 
         if (fromTime && currentTime < fromTime) {
           note = 'Sale start in :'
 
-          diff = (fromTime - currentTime) / 1000
+          difference = (fromTime - currentTime) / 1000
         } else if (toTime && fromTime < currentTime < toTime) {
           note = 'Sale ends in :'
 
-          diff = (toTime - currentTime) / 1000
+          difference = (toTime - currentTime) / 1000
         }
 
-        d = Math.abs(Math.floor(diff / (60 * 60 * 24)))
-        h = Math.abs(Math.floor(diff % (60 * 60 * 24) / (60 * 60) ))
-        m = Math.abs(Math.floor(diff % (60 * 60 * 24) % (60 * 60) / (60)))
-        s = Math.abs(Math.floor(diff % 60))
+        day = Math.abs(Math.floor(difference / (60 * 60 * 24)))
+        hour = Math.abs(Math.floor(difference % (60 * 60 * 24) / (60 * 60) ))
+        minute = Math.abs(Math.floor(difference % (60 * 60 * 24) % (60 * 60) / (60)))
+        second = Math.abs(Math.floor(difference % 60))
 
         setInterval(function () {
           // Decrease second
-          --s
+          --second
 
-          m = (s < 0 ? --m : m)
-          h = (m < 0 ? --h : h)
-          d = (h < 0 ? --d : d)
+          minute = (second < 0 ? --minute : minute)
+          hour = (minute < 0 ? --hour : hour)
+          day = (hour < 0 ? --day : day)
 
-          if (d < 0) {
+          if (day <= 0 && hour <= 0 && minute <= 0 && second <= 0) {
             clearInterval()
           }
-          s = (s < 0 ? 59 : s)
-          m = (m < 0 ? 59 : m)
-          h = (h < 0 ? 24 : h)
+
+          second = (second < 0 ? 59 : second)
+          minute = (minute < 0 ? 59 : minute)
+          hour = (hour < 0 ? 24 : hour)
 
           $('#'+theID).find("#countdown-note").html(note)
-          $('#'+theID).find("#days").html(d)
-          $('#'+theID).find("#hours").html(h < 10 ? '0' + h : h)
-          $('#'+theID).find("#minutes").html(m < 10 ? '0' + m : m)
-          $('#'+theID).find("#seconds").html(s < 10 ? '0' + s : s)
+          $('#'+theID).find("#days").html(day)
+          $('#'+theID).find("#hours").html(hour < 10 ? '0' + hour : hour)
+          $('#'+theID).find("#minutes").html(minute < 10 ? '0' + minute : minute)
+          $('#'+theID).find("#seconds").html(second < 10 ? '0' + second : second)
         }, 1000)
       }
     })
   }
 
-  function atcGamesProduct (e) {
+  function addToCartGamesProduct (e) {
     e.preventDefault()
 
-    const theUrl = $('input[name="url"]').val()
     const postData = $(this).serializeArray()
+    postData.push({ name: 'nonce', value: parameters.ajax_add_to_cart.nonce })
+    postData.push({ name: 'action', value: parameters.ajax_add_to_cart.action })
 
     $.ajax({
-      url: theUrl,
+      url: parameters.url_admin_ajax,
       method: 'POST',
       data: $.param(postData),
       beforeSend: function () {
-        alert('Loading...')
-      },
-      statusCode: {
-        200: function (response) {
-          // console.log(response)
-          alert(response.message)
-          $('form.cart')[0].reset()
-        },
-        400: function (response) {
-          alert(response.responseJSON.message)
-          // console.log(response.responseJSON)
-        },
-        500: function (response) {
-          alert(response.responseJSON.message)
-          // console.log(response.responseJSON)
-        }
+        alert('loading')
       }
+    }).done((response) => {
+      const message = response.message || 'Added to cart.'
+      alert(message)
+      $('form.cart')[0].reset()
+    }).fail((response) => {
+      alert(response.responseJSON.message)
     })
   }
 
-  function atcButton () {
-    $(".virtual-games").each((i, obj) => {
+  /**
+   * Alter add to cart button for "virtual" product with category = "games".
+   * "virtual" product with category "games" has 2 custom meta that required to fill.
+   *
+   * Selector : element(s) with class .virtual-games (element created from php).
+   * redirect to : product single page.
+   * */
+  function addToCartButton () {
+    $(".virtual-games").each((obj) => {
       const parent = $(obj).parent()
       const parentTarget = $(parent).attr("href")
       const parentSiblings = $(parent).siblings('a.button')
-      // console.log($(parentSiblings).attr("href"))
 
       /** Give event listener to parents sibling */
       $(parentSiblings).removeClass("add_to_cart_button");
@@ -108,15 +107,16 @@ const lamModule = (function() {
     })
   }
 
-  // function test () {
-  //   $(".woocommerce-loop-product__link").addClass('relative')
-  // }
-
   function initialize () {
     showCountDown()
-    atcButton()
-    $(".cart").on("submit", atcGamesProduct)
-    // test()
+    addToCartButton()
+
+    /**
+     * Add Event listener in the single.
+     * ONLY IF DOM with id virtual-games is exists. */
+    if ($("#virtual-games").data("type") === 'virtual' && $("#virtual-games").data("category") === 'games') {
+      $(".cart").on("submit", addToCartGamesProduct)
+    }
   }
 
   return {
@@ -124,4 +124,4 @@ const lamModule = (function() {
   }
 })()
 
-export default lamModule
+export default shopModule

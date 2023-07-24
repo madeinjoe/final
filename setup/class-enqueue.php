@@ -59,6 +59,10 @@ class Enqueue
             'nonce' => wp_create_nonce('_contact_nonce')
         ];
 
+        $cartData = [
+            'action' => 'custom_woocommerce_add_to_cart',
+            'nonce' => wp_create_nonce('_custom_meta_cart')
+        ];
 
         /**
          * enqueue Example Ajax
@@ -70,7 +74,8 @@ class Enqueue
                 'url_admin_ajax'       => admin_url('admin-ajax.php'),
                 'ajax_custom_registration' => $customRegistration,
                 'ajax_custom_login' => $customLogin,
-                'ajax_contact_message' => $contactData
+                'ajax_contact_message' => $contactData,
+                'ajax_add_to_cart' => $cartData
             ]
         );
     }

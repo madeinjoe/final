@@ -14,7 +14,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
 
-var lamModule = function () {
+var shopModule = function () {
   function showCountDown() {
     jquery__WEBPACK_IMPORTED_MODULE_0___default()('.product-sale-date').each(function (i, obj) {
       var theID = jquery__WEBPACK_IMPORTED_MODULE_0___default()(obj).data('id');
@@ -22,80 +22,83 @@ var lamModule = function () {
       var fromTime = new Date(jquery__WEBPACK_IMPORTED_MODULE_0___default()(obj).find('.from').data('from'));
       var toTime = new Date(jquery__WEBPACK_IMPORTED_MODULE_0___default()(obj).find('.to').data('to'));
       if ((fromTime || toTime) && (fromTime > currentTime || currentTime < toTime)) {
-        var d = null;
-        var h = null;
-        var m = null;
-        var s = null;
+        var day = null;
+        var hour = null;
+        var minute = null;
+        var second = null;
         var note = null;
-        var diff = 0;
+        var difference = 0;
         if (fromTime && currentTime < fromTime) {
           note = 'Sale start in :';
-          diff = (fromTime - currentTime) / 1000;
+          difference = (fromTime - currentTime) / 1000;
         } else if (toTime && fromTime < currentTime < toTime) {
           note = 'Sale ends in :';
-          diff = (toTime - currentTime) / 1000;
+          difference = (toTime - currentTime) / 1000;
         }
-        d = Math.abs(Math.floor(diff / (60 * 60 * 24)));
-        h = Math.abs(Math.floor(diff % (60 * 60 * 24) / (60 * 60)));
-        m = Math.abs(Math.floor(diff % (60 * 60 * 24) % (60 * 60) / 60));
-        s = Math.abs(Math.floor(diff % 60));
+        day = Math.abs(Math.floor(difference / (60 * 60 * 24)));
+        hour = Math.abs(Math.floor(difference % (60 * 60 * 24) / (60 * 60)));
+        minute = Math.abs(Math.floor(difference % (60 * 60 * 24) % (60 * 60) / 60));
+        second = Math.abs(Math.floor(difference % 60));
         setInterval(function () {
           // Decrease second
-          --s;
-          m = s < 0 ? --m : m;
-          h = m < 0 ? --h : h;
-          d = h < 0 ? --d : d;
-          if (d < 0) {
+          --second;
+          minute = second < 0 ? --minute : minute;
+          hour = minute < 0 ? --hour : hour;
+          day = hour < 0 ? --day : day;
+          if (day <= 0 && hour <= 0 && minute <= 0 && second <= 0) {
             clearInterval();
           }
-          s = s < 0 ? 59 : s;
-          m = m < 0 ? 59 : m;
-          h = h < 0 ? 24 : h;
+          second = second < 0 ? 59 : second;
+          minute = minute < 0 ? 59 : minute;
+          hour = hour < 0 ? 24 : hour;
           jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#countdown-note").html(note);
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#days").html(d);
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#hours").html(h < 10 ? '0' + h : h);
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#minutes").html(m < 10 ? '0' + m : m);
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#seconds").html(s < 10 ? '0' + s : s);
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#days").html(day);
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#hours").html(hour < 10 ? '0' + hour : hour);
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#minutes").html(minute < 10 ? '0' + minute : minute);
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + theID).find("#seconds").html(second < 10 ? '0' + second : second);
         }, 1000);
       }
     });
   }
-  function atcGamesProduct(e) {
+  function addToCartGamesProduct(e) {
     e.preventDefault();
-    var theUrl = jquery__WEBPACK_IMPORTED_MODULE_0___default()('input[name="url"]').val();
     var postData = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).serializeArray();
+    postData.push({
+      name: 'nonce',
+      value: parameters.ajax_add_to_cart.nonce
+    });
+    postData.push({
+      name: 'action',
+      value: parameters.ajax_add_to_cart.action
+    });
     jquery__WEBPACK_IMPORTED_MODULE_0___default().ajax({
-      url: theUrl,
+      url: parameters.url_admin_ajax,
       method: 'POST',
       data: jquery__WEBPACK_IMPORTED_MODULE_0___default().param(postData),
       beforeSend: function beforeSend() {
-        alert('Loading...');
-      },
-      statusCode: {
-        200: function _(response) {
-          // console.log(response)
-          alert(response.message);
-          jquery__WEBPACK_IMPORTED_MODULE_0___default()('form.cart')[0].reset();
-        },
-        400: function _(response) {
-          alert(response.responseJSON.message);
-          // console.log(response.responseJSON)
-        },
-
-        500: function _(response) {
-          alert(response.responseJSON.message);
-          // console.log(response.responseJSON)
-        }
+        alert('loading');
       }
+    }).done(function (response) {
+      var message = response.message || 'Added to cart.';
+      alert(message);
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('form.cart')[0].reset();
+    }).fail(function (response) {
+      alert(response.responseJSON.message);
     });
   }
 
-  function atcButton() {
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()(".virtual-games").each(function (i, obj) {
+  /**
+   * Alter add to cart button for "virtual" product with category = "games".
+   * "virtual" product with category "games" has 2 custom meta that required to fill.
+   *
+   * Selector : element(s) with class .virtual-games (element created from php).
+   * redirect to : product single page.
+   * */
+  function addToCartButton() {
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()(".virtual-games").each(function (obj) {
       var parent = jquery__WEBPACK_IMPORTED_MODULE_0___default()(obj).parent();
       var parentTarget = jquery__WEBPACK_IMPORTED_MODULE_0___default()(parent).attr("href");
       var parentSiblings = jquery__WEBPACK_IMPORTED_MODULE_0___default()(parent).siblings('a.button');
-      // console.log($(parentSiblings).attr("href"))
 
       /** Give event listener to parents sibling */
       jquery__WEBPACK_IMPORTED_MODULE_0___default()(parentSiblings).removeClass("add_to_cart_button");
@@ -108,23 +111,22 @@ var lamModule = function () {
       });
     });
   }
-
-  // function test () {
-  //   $(".woocommerce-loop-product__link").addClass('relative')
-  // }
-
   function initialize() {
     showCountDown();
-    atcButton();
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()(".cart").on("submit", atcGamesProduct);
-    // test()
-  }
+    addToCartButton();
 
+    /**
+     * Add Event listener in the single.
+     * ONLY IF DOM with id virtual-games is exists. */
+    if (jquery__WEBPACK_IMPORTED_MODULE_0___default()("#virtual-games").data("type") === 'virtual' && jquery__WEBPACK_IMPORTED_MODULE_0___default()("#virtual-games").data("category") === 'games') {
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()(".cart").on("submit", addToCartGamesProduct);
+    }
+  }
   return {
     init: initialize
   };
 }();
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (lamModule);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (shopModule);
 
 /***/ })
 

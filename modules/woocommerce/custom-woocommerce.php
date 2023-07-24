@@ -1,7 +1,7 @@
 <?php
 defined('ABSPATH') || die('Direct access not allowed');
 
-class middleWoocommerce
+class customWoocommerce
 {
     public function __construct()
     {
@@ -11,29 +11,28 @@ class middleWoocommerce
         add_action('woocommerce_after_shop_loop_item_title', [$this, 'initAfterShopLoopTitle']);
 
         remove_action('woocommerce_single_product_summary', 'woocommerce_template_single_price');
-        add_action('woocommerce_single_product_summary', [$this, 'wooShopProductsPrice']);
+        add_action('woocommerce_single_product_summary', [$this, 'woocommerceShopProductsPrice']);
 
-        add_action('woocommerce_before_shop_loop_item', [$this, 'wooShop']);
+        add_action('woocommerce_before_shop_loop_item', [$this, 'woocommerceShop']);
 
-        add_action('woocommerce_before_single_product', [$this, 'wooSingleProduct']);
-        add_action('woocommerce_before_add_to_cart_form', [$this, 'wooCountdownWrapper']);
-        add_action('woocommerce_before_add_to_cart_quantity', [$this, 'wooItemCustomMeta']);
+        add_action('woocommerce_before_single_product', [$this, 'woocommerceSingleProduct']);
+        add_action('woocommerce_before_add_to_cart_form', [$this, 'woocommerceCountdownWrapper']);
+        add_action('woocommerce_before_add_to_cart_quantity', [$this, 'woocommerceItemCustomMeta']);
 
         /** Cart */
-        add_filter('woocommerce_get_item_data', [$this, 'wooCartRenderMeta'], 10, 2);
-        add_filter('woocommerce_cart_item_quantity', [$this, 'wooCartQuantity'], 10, 3);
+        add_filter('woocommerce_get_item_data', [$this, 'woocommerceCartRenderMeta'], 10, 2);
+        add_filter('woocommerce_cart_item_quantity', [$this, 'woocommerceCartQuantity'], 10, 3);
 
         /** Order */
-        add_action('woocommerce_order_item_meta_start', [$this, 'wooEmailItemMeta'], 10, 4);
-        add_action('woocommerce_add_order_item_meta', [$this, 'wooAtcGamesMeta'], 10, 3);
-        // add_action('woocommerce_checkout_create_order_line_item', [$this, 'wooAtcGamesMeta'], 10, 4);
+        add_action('woocommerce_order_item_meta_start', [$this, 'woocommerceEmailItemMeta'], 10, 4);
+        add_action('woocommerce_add_order_item_meta', [$this, 'woocommerceAddOrderItemMeta'], 10, 3);
     }
 
     public function initAfterShopLoopTitle()
     {
-        $this->wooShopProductsPrice();
-        $this->wooShopProduct();
-        $this->wooCountdownWrapper();
+        $this->woocommerceShopProductsPrice();
+        $this->woocommerceShopProduct();
+        $this->woocommerceCountdownWrapper();
     }
 
     public function wooCartItemPrice($cart)
@@ -46,7 +45,6 @@ class middleWoocommerce
 
             foreach ($categories as $category) {
                 if (has_term_meta($category->term_id) && get_term_meta($category->term_id, 'has_discount', true)) {
-                    $discType = get_term_meta($category->term_id, 'discount_type', true);
                     $discAmount = get_term_meta($category->term_id, 'discount_amount', true);
 
                     if (get_term_meta($category->term_id, 'discount_type', true) === 'percentage') {
@@ -61,12 +59,11 @@ class middleWoocommerce
                 }
             }
             $price = floatval($product->get_price()) - $totalDisc;
-            // print("<pre>".print_r($price, true)."</pre>");
             $value['data']->set_price($price);
         }
     }
 
-    public function wooShopProductsPrice()
+    public function woocommerceShopProductsPrice()
     {
         global $product;
 
@@ -98,7 +95,7 @@ class middleWoocommerce
         echo '<h1 class="text-3xl text-emerald-600">' . wc_price($price) . '</h1>';
     }
 
-    public function wooShop()
+    public function woocommerceShop()
     {
         global $product;
 
@@ -111,10 +108,10 @@ class middleWoocommerce
         }
     }
 
-    public function wooShopProduct()
+    public function woocommerceShopProduct()
     {
         global $product;
-        $timeDiff = $this->productCountDownData($product);
+        $timeDiff = $this->_productCountDownData($product);
 
         $output = '<span class="product-sale-date" data-id="' . $product->get_ID() . '">';
 
@@ -141,7 +138,7 @@ class middleWoocommerce
         echo $output;
     }
 
-    public function wooCountdownWrapper()
+    public function woocommerceCountdownWrapper()
     {
         global $product;
 
@@ -173,7 +170,7 @@ class middleWoocommerce
         }
     }
 
-    public function wooSingleProduct()
+    public function woocommerceSingleProduct()
     {
         global $product;
 
@@ -193,36 +190,37 @@ class middleWoocommerce
 
                 echo $output;
             }
+
+
+            if ($product->is_virtual('yes') && has_term('games', 'product_cat', $product->get_ID())) {
+                echo '<span id="virtual-games" data-type="virtual" data-category="games"></span>';
+            }
         }
     }
 
-    public function wooItemCustomMeta()
+    public function woocommerceItemCustomMeta()
     {
         global $product;
+        echo '<input type="hidden" name="product_id" value="' . $product->get_ID() . '">';
         if ($product->is_virtual('yes') && has_term('games', 'product_cat', $product->get_ID())) {
-            echo '<input type="hidden" name="item" value="' . $product->get_ID() . '">';
-            echo '<input type="hidden" name="action" value="woo_atc_games">';
-            echo '<input type="hidden" name="url" value="' . admin_url('admin-ajax.php') . '">';
-            // echo '<div id="form-custom-meta">';
-            wp_nonce_field('_atc_games', 'nonce');
             echo '<div class="input-group">';
-            echo '<label for="custom-meta-1">Select Platform</label>';
-            echo '<select id="custom-meta-1" name="meta-slct" class="form-control" required>';
+            echo '<label for="custom-meta-platform">Select Platform</label>';
+            echo '<select id="custom-meta-platform" name="meta-platform" class="form-control" required>';
             echo '<option value="">Select Platform</option>';
             echo '<option value="Steam">Steam</option>';
-            echo '<option value="EGS">Epic Games Store</option>';
+            echo '<option value="Epic-Games">Epic Games Store</option>';
             echo '<option value="Origin">Origin</option>';
             echo '</select>';
             echo '</div>';
             echo '<div class="input-group">';
-            echo '<label for="custom-meta-2">Input Account ID</label>';
-            echo '<input id="custom-meta-2" name="meta-input" class="form-control" required="required" />';
+            echo '<label for="custom-meta-account">Input Account ID</label>';
+            echo '<input id="custom-meta-account" name="meta-account" class="form-control" required="required" />';
             echo '</div>';
             // echo '</div>';
         }
     }
 
-    public function wooCartRenderMeta($data, $cart_item)
+    public function woocommerceCartRenderMeta($data, $cart_item)
     {
         if (array_key_exists('metadata', $cart_item)) {
             foreach ($cart_item['metadata'] as $key => $values) {
@@ -236,13 +234,12 @@ class middleWoocommerce
         return $data;
     }
 
-    public function wooAtcGamesMeta($itemId, $cart_items, $cart_item_key)
-    // public function wooAtcGamesMeta($item, $cart_item_key, $cart_items, $order)
+    public function woocommerceAddOrderItemMeta($itemId, $cart_items, $cart_item_key)
     {
         wc_add_order_item_meta($itemId, 'metadata', $cart_items['metadata']);
     }
 
-    public function wooCartQuantity($product_quantity, $cart_item_key, $cart_item)
+    public function woocommerceCartQuantity($product_quantity, $cart_item_key, $cart_item)
     {
         $product = wc_get_product($cart_item['product_id']);
 
@@ -253,7 +250,7 @@ class middleWoocommerce
         }
     }
 
-    public function wooEmailItemMeta($item_id, $item, $order, $do_plain)
+    public function woocommerceEmailItemMeta($item_id, $item, $order, $do_plain)
     {
         $meta = wc_get_order_item_meta($item_id, 'metadata', true);
         if ($meta) {
@@ -268,7 +265,7 @@ class middleWoocommerce
         }
     }
 
-    private function productCountDownData($product)
+    private function _productCountDownData($product)
     {
         $currentTime = new DateTime('now');
         $fromTime = $product->get_date_on_sale_from() ? new DateTime($product->get_date_on_sale_from()->date('Y-m-d H:i:s')) : null;
@@ -285,4 +282,4 @@ class middleWoocommerce
 }
 
 // Initiate
-new middleWoocommerce();
+new customWoocommerce();
