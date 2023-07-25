@@ -56,4 +56,20 @@
   li.product {
     @apply relative;
   }
+
+  .cart-collaterals {
+    @apply flex w-full flex-nowrap;
+  }
+
+  .cart-collaterals > .cart-collaterals-left {
+    @apply grid w-1/2 grid-flow-row grid-cols-2 gap-3;
+  }
+
+  .cart-collaterals .cart-collaterals-card {
+    @apply flex flex-col h-full col-span-1 gap-2 pb-2 overflow-hidden rounded;
+  }
+
+  .cart-collaterals-card a, .cart-collaterals-card h2 {
+    @apply text-lg tracking-wider no-underline;
+  }
 }

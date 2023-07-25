@@ -22,6 +22,7 @@ class customWoocommerce
         /** Cart */
         add_filter('woocommerce_get_item_data', [$this, 'woocommerceCartRenderMeta'], 10, 2);
         add_filter('woocommerce_cart_item_quantity', [$this, 'woocommerceCartQuantity'], 10, 3);
+        add_filter('woocommerce_cart_collaterals', [$this, 'woocommerceCartShortcode']);
 
         /** Order */
         add_action('woocommerce_order_item_meta_start', [$this, 'woocommerceEmailItemMeta'], 10, 4);
@@ -60,6 +61,28 @@ class customWoocommerce
             }
             $price = floatval($product->get_price()) - $totalDisc;
             $value['data']->set_price($price);
+        }
+    }
+
+    public function woocommerceCartShortcode()
+    {
+        global $post;
+
+        $cart = WC()->cart;
+        $cartTotal = $cart->total;
+
+        $cartCategoyIds = [];
+        $productInCart = [];
+
+        foreach ($cart->get_cart() as $key => $item) {
+            $cartCategoyIds = array_unique(array_merge($cartCategoyIds, $item['data']->get_category_ids()));
+            $productInCart[] = $item['product_id'];
+        }
+
+        $givenLimit = get_post_meta($post->ID, 'show_collaterals_when_limit', true);
+
+        if ($cartTotal >= $givenLimit) {
+            echo do_shortcode('[testshortcode categories="' . implode(',', $cartCategoyIds) . '" products="' . implode(',', $productInCart) . '"]');
         }
     }
 

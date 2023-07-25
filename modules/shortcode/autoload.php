@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Used for Default Component of Pagination
  *
@@ -8,5 +9,6 @@
  * @package HelloElementor
  */
 
-defined( 'ABSPATH' ) || die( "Can't access directly" );
+defined('ABSPATH') || die("Can't access directly");
 require_once __DIR__ . '/class-shortcode.php';
+require_once __DIR__ . '/custom-shortcode.php';
