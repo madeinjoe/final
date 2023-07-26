@@ -16,3 +16,5 @@ require_once __DIR__ . '/__class-register.php';
 // require_once __DIR__ . '/example-cpt.php';
 require_once __DIR__ . '/contact-cpt.php';
 require_once __DIR__ . '/product-cpt.php';
+require_once __DIR__ . '/event-cpt.php';
+require_once __DIR__ . '/close-date-cpt.php';

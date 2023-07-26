@@ -920,55 +920,44 @@ li.product {
 .duration-\[25ms\] {
   transition-duration: 25ms !important;
 }
-
 .checked\:border-blue-400:checked {
   --tw-border-opacity: 1 !important;
   border-color: rgb(96 165 250 / var(--tw-border-opacity)) !important;
 }
-
 .checked\:bg-blue-400:checked {
   --tw-bg-opacity: 1 !important;
   background-color: rgb(96 165 250 / var(--tw-bg-opacity)) !important;
 }
-
 .checked\:text-white:checked {
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity)) !important;
 }
-
 .checked\:after\:text-base:checked::after {
   content: var(--tw-content) !important;
   font-size: 1rem !important;
   line-height: 1.5rem !important;
 }
-
 .checked\:after\:content-\[\'\&\#10003\;\'\]:checked::after {
   --tw-content: '&#10003;' !important;
   content: var(--tw-content) !important;
 }
-
 .hover\:bg-blue-500:hover {
   --tw-bg-opacity: 1 !important;
   background-color: rgb(59 130 246 / var(--tw-bg-opacity)) !important;
 }
-
 .hover\:text-blue-400:hover {
   --tw-text-opacity: 1 !important;
   color: rgb(96 165 250 / var(--tw-text-opacity)) !important;
 }
-
 .hover\:underline:hover {
   text-decoration-line: underline !important;
 }
-
 .hover\:decoration-blue-400:hover {
   text-decoration-color: #60a5fa !important;
 }
-
 .hover\:underline-offset-2:hover {
   text-underline-offset: 2px !important;
 }
-
 .focus\:outline-none:focus {
   outline: 2px solid transparent !important;
   outline-offset: 2px !important;

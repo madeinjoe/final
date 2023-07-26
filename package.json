@@ -39,6 +39,7 @@
   "author": "unknown-dev",
   "license": "ISC",
   "dependencies": {
+    "air-datepicker": "^3.4.0",
     "jquery": "^3.6.0"
   }
 }
