@@ -4,16 +4,16 @@ namespace Custom\Post;
 
 class RegisterPost
 {
-    protected $status;
-    protected $allowedRoles;
+    protected static $status = ['publish', 'future', 'draft', 'pending', 'private', 'trash', 'auto-draft', 'inherit'];
+    protected static $allowedRoles = ['administrator'];
 
     public function __construct()
     {
-        $this->status = ['publish', 'future', 'draft', 'pending', 'private', 'trash', 'auto-draft', 'inherit'];
-        $this->allowedRoles = ['administrator'];
+        // self::status;
+        // self::allowedRoles;
     }
 
-    public function makePost(String $title, String|array $post_type, array $allowed_role, String $template, array $args, String $permalink = null)
+    public static function makePost(String $title, String|array $post_type, array $allowed_role, String $template, array $args, String $permalink = null)
     {
         /** Check if title and permalink exist */
         // $post = get_page_by_title($title); // Deprecated since 6.2.0
@@ -35,7 +35,7 @@ class RegisterPost
         if (empty($posts) || !$link) {
             /** Check if current user is allowed */
             $currentUser = wp_get_current_user();
-            if (in_array(strtolower($currentUser->roles[0]), $allowed_role ?? $this->allowedRoles)) {
+            if (in_array(strtolower($currentUser->roles[0]), $allowed_role ?? self::allowedRoles)) {
                 /** Get the args */
                 $defaultArguments = self::theArguments($permalink, $title, $post_type, $template);
 
@@ -71,7 +71,10 @@ class RegisterPost
         return $defaultArguments;
     }
 
-    public function makeMessage(String $title, String $post_type, String $template, array $args, String $permalink = null)
+    /**
+     * This method used to create a post for USER WITH NO PRIVILEDGE
+     */
+    public static function makePostNoPriv(String $title, String $post_type, String $template, array $args, String $permalink = null)
     {
         /** Get the args */
         $defaultArguments = self::theArguments($permalink, $title, $post_type, $template);

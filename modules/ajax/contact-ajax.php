@@ -49,7 +49,7 @@ class ContactAjax extends SanitizeAndValidate
                 'post_parent' => 0,
             ];
 
-            $message = $this->registerPost->makeMessage($this->data['contact-message-subject'], 'shop-messages', 'default', $arguments);
+            $message = $this->registerPost->makePostNoPriv($this->data['contact-message-subject'], 'shop-messages', 'default', $arguments);
             if (!$message) {
                 wp_send_json([
                     'success' => false,
